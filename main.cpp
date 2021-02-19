@@ -1,18 +1,43 @@
 #define UNICODE
 #define TEXT
 #define DEFAULT_BUTTON_WIDTH 100
-#define DEFAULT_BUTTON_HEIGHT 100
+#define DEFAULT_BUTTON_HEIGHT 50
+
+//IDs de menu
+#define MENU_FILE_OPEN 1
+#define MENU_FILE_SAVE 2
+#define MENU_EDIT_COPY 3
+#define MENU_EDIT_PASTE 4
+#define MENU_OPSTIONS_OPTION 5
+#define MENU_EXIT 6
+
 #include <Windows.h>
 #include <windows.h>
 #include <WinUser.h>
 
+
 HWND Window;
 HWND bCreateWall;
+
+void AddMenus(HWND hWnd);
+
 //evento de comando
 void WMCommand(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){
     if (lParam == (LPARAM)bCreateWall)
         MessageBox(Window, L"vc apertou bCreateWall", L"BOA!", MB_OK);
-    // else if (wParam == ID_FILE_EXIT) PostQuitMessage(0);
+    else if (wParam)
+        switch (wParam) {
+            case 1: MessageBox(Window, L"vc clicou em abrir", L"ae", MB_OK);break;
+            case 2: MessageBox(Window, L"vc clicou em salvar", L"ae", MB_OK);break;
+            case 3: MessageBox(Window, L"vc clicou em copiar", L"ae", MB_OK);break;
+            case 4: MessageBox(Window, L"vc clicou em colar", L"ae", MB_OK);break;
+            case 5: MessageBox(Window, L"vc clicou em opção", L"ae", MB_OK);break;
+            case 6: {
+                MessageBox(Window, L"FLWS", L"EAE", MB_OK);
+                PostQuitMessage(0);
+            }
+        }
+        
 }
 
 
@@ -20,20 +45,7 @@ void WMCommand(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){
 LRESULT CALLBACK WndowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     switch (msg) {
         case WM_DESTROY: PostQuitMessage(0); break;
-        case WM_CREATE: {
-            HMENU hMenu = CreateMenu();
-            HMENU hFile = CreateMenu();
-            HMENU hOptions = CreateMenu();
-
-            AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hFile, L"File");
-            AppendMenu(hMenu, MF_POPUP, NULL, L"Edit");
-            AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hOptions, L"Options");
-
-            AppendMenu(hFile, MF_STRING, NULL, L"Exit");
-            AppendMenu(hFile, MF_STRING, NULL, L"1");
-            AppendMenu(hFile, MF_STRING, NULL, L"2");
-            SetMenu(hWnd, hMenu);
-        } break;
+        case WM_CREATE: AddMenus(hWnd); break;
         case WM_COMMAND: WMCommand(hWnd, msg, wParam, lParam); break;
     }
     return (DefWindowProc(hWnd, msg, wParam, lParam));
@@ -114,4 +126,26 @@ int CmdShow){
     }
     
     return (1);
+}
+
+void AddMenus(HWND hWnd){
+    HMENU hMenu = CreateMenu();
+
+    HMENU hFile = CreateMenu();
+    HMENU hOptions = CreateMenu();
+    HMENU hEdit = CreateMenu();
+
+    AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hFile, L"File");
+    AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hEdit, L"Edit");
+    AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hOptions, L"Options");
+    AppendMenu(hMenu, MF_SEPARATOR, NULL, NULL);    
+    AppendMenu(hMenu, MF_STRING, MENU_EXIT, L"Exit");
+
+    AppendMenu(hFile, MF_STRING, MENU_FILE_OPEN, L"Open");
+    AppendMenu(hFile, MF_STRING, MENU_FILE_SAVE, L"Save");
+    AppendMenu(hEdit, MF_STRING, MENU_EDIT_COPY, L"Copy");
+    AppendMenu(hEdit, MF_STRING, MENU_EDIT_PASTE, L"Paste");
+    AppendMenu(hOptions, MF_STRING, MENU_OPSTIONS_OPTION, L"Option");
+    
+    SetMenu(hWnd, hMenu);
 }
